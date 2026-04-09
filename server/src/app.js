@@ -19,6 +19,19 @@ app.use(
 app.use(express.json());
 app.use('/uploads', express.static(uploadsRoot));
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    service: 'Event Management API',
+    status: 'running',
+    health: '/health',
+    routes: {
+      auth: '/auth',
+      tasks: '/tasks',
+      admin: '/admin'
+    }
+  });
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
