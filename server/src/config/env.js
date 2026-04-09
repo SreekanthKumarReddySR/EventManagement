@@ -8,9 +8,22 @@ const __dirname = path.dirname(__filename);
 const serverRoot = path.resolve(__dirname, '..', '..');
 const workspaceRoot = path.resolve(serverRoot, '..');
 const envFile = path.join(workspaceRoot, '.env');
+const defaultClientOrigins = [
+  'http://localhost:5173',
+  'https://event-management-client-ochre.vercel.app'
+];
 
 if (fs.existsSync(envFile)) {
   dotenv.config({ path: envFile });
+}
+
+function parseOrigins(value) {
+  const configuredOrigins = (value || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  return [...new Set([...defaultClientOrigins, ...configuredOrigins])];
 }
 
 export const env = {
@@ -18,7 +31,7 @@ export const env = {
   port: Number(process.env.PORT) || 5000,
   databaseUrl: process.env.DATABASE_URL || '',
   databaseSsl: process.env.DATABASE_SSL === 'true',
-  clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  clientOrigins: parseOrigins(process.env.CLIENT_ORIGIN),
   jwtSecret: process.env.JWT_SECRET || '',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d'
 };
